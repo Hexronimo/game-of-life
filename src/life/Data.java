@@ -17,11 +17,11 @@ public class Data implements Cloneable {
 
     @Override
     protected Data clone() {
-            Data d = null;
-            try {
-                d = (Data) super.clone();
-            } catch (CloneNotSupportedException e) {
-
+            Data d = new Data(cells[0].length);
+            for(int i = 0; i < cells[0].length; i++){
+                for(int j = 0; j < cells[0].length; j++) {
+                    d.setStateOfXY(j,i,cells[j][i]);
+                }
             }
             return d;
     }
