@@ -1,16 +1,18 @@
 package life;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Field {
-    private final long SEED;
+    private long SEED;
     private int width;
     private char picAlive;
     private char picDead;
 
     private Data current;
     private Data upcoming;
+    private int generation;
 
 
     public Field(int width, long seed) {
@@ -26,8 +28,18 @@ public class Field {
                 current.setStateOfXY(x, y, random.nextBoolean());
             }
         }
+        generation = 1;
     }
 
+
+
+    public Data getCurrent(){
+        return current;
+    }
+
+    public int getGeneration(){
+        return generation;
+    }
 
     public void evolve() {
         for (int y = 0; y < width; y++) {
@@ -43,6 +55,11 @@ public class Field {
         }
         current = upcoming.clone();
         upcoming = new Data(width);
+        generation++;
+    }
+
+    public int getWidth() {
+        return width;
     }
 
     public int countAlive() {
@@ -80,4 +97,5 @@ public class Field {
             System.out.println();
         }
     }
-}
+
+ }
