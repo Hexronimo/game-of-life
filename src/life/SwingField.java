@@ -16,6 +16,9 @@ public class SwingField extends JPanel implements Runnable {
     private JLabel alive;
     private JPanel panelField;
     private int fieldPanelWidth;
+    private Color color;
+
+    private Field repoFieldGen1;
 
     private List<Cell> cells;
 
@@ -42,18 +45,25 @@ public class SwingField extends JPanel implements Runnable {
     }
 
     public void setRandomField(Integer fieldSize, Long seed){
-        if (field != null && fieldSize == null) {
-            fieldSize = this.fieldSize;
-        }
-        if (field != null && seed == null) {
-            seed = 1l;
-        }
         field = new Field(fieldSize,seed);
+        repoFieldGen1 = new Field(fieldSize, seed);
         this.fieldSize = fieldSize;
     }
 
-    public void setPredefinedField(Integer fieldSize, boolean[][] data) {
+    public void setPredefinedField(boolean[][] data) {
+        field = new Field(data);
+        repoFieldGen1 = new Field(data);
+        fieldSize = data[0].length;
+    }
 
+    public void restart() {
+        try {
+            field = (Field)repoFieldGen1.clone();
+        } catch (CloneNotSupportedException e){}
+    }
+
+    public void setCellColor(Color color){
+        this.color = color;
     }
 
     public void buildField() {
@@ -85,7 +95,7 @@ public class SwingField extends JPanel implements Runnable {
         for (int y = 0; y < field.getWidth(); y++){
             for (int x = 0; x < field.getWidth(); x++){
                 if (field.getCurrent().getStateOfXY(x,y)) {
-                    cells.get(count).changeColor(Color.BLACK);
+                    cells.get(count).changeColor(color);
                 } else {
                     cells.get(count).changeColor(this.getBackground());
                 }

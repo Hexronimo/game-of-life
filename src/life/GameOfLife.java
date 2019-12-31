@@ -6,17 +6,19 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class GameOfLife extends JFrame {
 
-    private int fieldPanelWidth;
+    private static int fieldPanelWidth;
+    private static Controller controller;
 
-    public GameOfLife(int fieldPanelWidth, Controller controller){
+    public GameOfLife(){
         super("Game of Life");
-        this.fieldPanelWidth = fieldPanelWidth;
+        //this.fieldPanelWidth = fieldPanelWidth;
         setSize(fieldPanelWidth + 160 + 30, fieldPanelWidth + 70);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -28,7 +30,6 @@ public class GameOfLife extends JFrame {
         controlButtons.setLayout(new GridLayout(1,2, 5, 0));
 
         JButton bPlayPause = new JButton("▶");
-        bPlayPause.setName("PlayToggleButton");
         bPlayPause.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -41,8 +42,20 @@ public class GameOfLife extends JFrame {
                 }
             }
         });
+        JButton bRestart = new JButton("⏮");
+        bRestart.setName("ResetButton");
+        bRestart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.stopGeneration();
+                bPlayPause.setText("▶");
+                controller.requestRestart();
+                controller.requestDraw();
+            }
+        });
 
         controlButtons.add(bPlayPause);
+        controlButtons.add(bRestart);
         leftMenu.add(controlButtons);
 
         leftMenu.add(new JLabel()); //separator
@@ -57,10 +70,11 @@ public class GameOfLife extends JFrame {
         leftMenu.add(iFieldSeed);
 
 
-        JButton bRestart = new JButton("Recreate");
-        bRestart.addActionListener(new ActionListener() {
+        JButton bRandom = new JButton("Random");
+        bRandom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                controller.stopGeneration();
                 String v1 = iFieldSize.getText();
                 String v2 = iFieldSeed.getText();
                 controller.setNewField(v1, v2);
@@ -68,13 +82,31 @@ public class GameOfLife extends JFrame {
                 controller.requestDraw();
             }
         });
-        leftMenu.add(bRestart);
-        JPanel saveLoadButtons = new JPanel();
-        saveLoadButtons.setLayout(new GridLayout(1,2, 3, 0));
-        JButton bSave = new JButton("Save");
-        JButton bLoad = new JButton("Load");
 
-        saveLoadButtons.add(bSave);
+        leftMenu.add(bRandom);
+        JPanel saveLoadButtons = new JPanel();
+        saveLoadButtons.setLayout(new GridLayout(1,1, 0, 0));
+
+        JButton bLoad = new JButton("Load");
+        bLoad.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                controller.stopGeneration();
+                bPlayPause.setText("▶");
+                JFileChooser fLoad = new JFileChooser();
+                int ret = fLoad.showDialog(null, "Open file");
+                if (ret == JFileChooser.APPROVE_OPTION) {
+                    File file = fLoad.getSelectedFile();
+                    try {
+                        controller.load(file);
+                    } catch(FieldReadingException e) {
+                        JOptionPane.showMessageDialog(null, e.getMessage());
+                    }
+                    controller.requestDraw();
+                }
+            }
+        });
+
         saveLoadButtons.add(bLoad);
         leftMenu.add(saveLoadButtons);
 
@@ -98,7 +130,7 @@ public class GameOfLife extends JFrame {
         colorList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                controller.requestColorChange((EnumColors) ((JComboBox)e.getSource()).getSelectedItem());
             }
         });
         leftMenu.add(colorList);
@@ -124,7 +156,9 @@ public class GameOfLife extends JFrame {
         swingField.setRandomField(size,seed);
         swingField.buildField();
         Controller controller = new Controller(swingField);
-        GameOfLife gameOfLife = new GameOfLife(fieldPanelWidth, controller);
+        GameOfLife.controller = controller;
+        GameOfLife.fieldPanelWidth = fieldPanelWidth;
+        GameOfLife gameOfLife = new GameOfLife();
         gameOfLife.setFieldPanel(swingField);
         controller.requestDraw();
     }

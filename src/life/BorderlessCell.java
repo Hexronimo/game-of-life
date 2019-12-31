@@ -16,7 +16,7 @@ public class BorderlessCell extends Cell {
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(color);
+        g2.setColor(super.color);
         g2.fillRect(0,0, cellSize, cellSize);
     }
 }

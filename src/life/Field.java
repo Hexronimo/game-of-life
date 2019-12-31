@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Field {
+public class Field implements Cloneable{
     private long SEED;
     private int width;
     private char picAlive;
@@ -31,7 +31,31 @@ public class Field {
         generation = 1;
     }
 
+    public Field(boolean[][] data) {
+        this.width = data[0].length;
+        this.SEED = 1;
+        picAlive = 'O';
+        picDead = ' ';
+        current = new Data(width);
+        upcoming = new Data(width);
+        for (int y = 0; y < width; y++) {
+            for (int x = 0; x < width; x++) {
+                current.setStateOfXY(x, y, data[x][y]);
+            }
+        }
+        generation = 1;
+    }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        boolean[][] clone  = new boolean[width][width];
+        for (int y = 0; y < width; y++) {
+            for (int x = 0; x < width; x++) {
+                clone[x][y] = current.getStateOfXY(x,y);
+            }
+        }
+        return new Field(clone);
+    }
 
     public Data getCurrent(){
         return current;
