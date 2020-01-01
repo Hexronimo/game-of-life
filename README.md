@@ -10,3 +10,7 @@ User can generate random first generation or load one from text file (e.g., [thi
 )). Also user may choose generation speed and cells color.
 
 ![MyImage](https://github.com/Hexronimo/game-of-life/raw/master/field.png)
+
+## Try it
+Download /life directory, open terminal and cd to its parent folder (where you downloded it) and run `java life.GameOfLife`. You need [Java Runtime Inviroment](https://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) to do it.
+
